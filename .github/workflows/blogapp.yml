@@ -1,0 +1,111 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:8
+        ports:
+          - PORT: 27017
+
+jobs:
+  ci_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install backend dependencies
+        working-directory: blogilista-backend
+        run: npm install
+
+      - name: Run backend tests
+        working-directory: blogilista-backend
+        env:
+          TEST_MONGODB_URI: TEST_MONGODB_URI
+          SECRET: SECRET
+        run: npm test
+
+      - name: Install frontend dependencies
+        working-directory: bloglist-frontend
+        run: npm install
+
+      - name: Lint frontend
+        working-directory: bloglist-frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: bloglist-frontend
+        run: npm run build
+
+  # notify_success:
+  #   needs: [simple_deployment_pipeline]
+  #   if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Discord success notification      
+  #       uses: sarisia/actions-status-discord@v1
+  #       with:
+  #         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+  #         status: ${{ job.status }}
+  #         title: "Deployment successful!"
+  #         description: "A new version deployed to production"
+
+
+  # notify_failure:
+  #   needs: [simple_deployment_pipeline]
+  #   if: ${{ always() && needs.simple_deployment_pipeline.result == 'failure' }}
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Discord error notification
+  #       uses: sarisia/actions-status-discord@v1
+  #       with:
+  #         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+  #         status: ${{ job.status }}
+  #         title: "Build failed!"
+  #         description: |
+  #           The pipeline encountered an error
+
+  #           Repository: ${{ github.repository }}
+  #           Branch: ${{ github.ref_name }}
+  #           Commit: ${{ github.sha }}
+  #           Message: ${{ github.event.head_commit.message }}
+  #           Author: ${{ github.actor }}
+  #           Workflow: ${{ github.workflow }}
+  #           Job: ${{ github.job }}
+
+  # tag_release:
+  #   needs: [ci_and_deploy]
+  #   if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+  #   runs-on: ubuntu-latest
+
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Bump version and push tag
+  #       uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
