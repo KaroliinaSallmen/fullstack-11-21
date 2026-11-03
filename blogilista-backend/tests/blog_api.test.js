@@ -252,7 +252,7 @@ test("a new user won't be added if the username is not unique", async () => {
   await api.post("/api/users").send(newUser).expect(400);
 });
 
-test.only("a new blog won't be added and the response is 401 unauthorized if the request doesn't include a token", async () => {
+test("a new blog won't be added and the response is 401 unauthorized if the request doesn't include a token", async () => {
   const newBlog = {
     title: "Lisätty blogi",
     author: "Matti Meikäläinen",

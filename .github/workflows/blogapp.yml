@@ -33,6 +33,7 @@ jobs:
       - name: Run backend tests
         working-directory: blogilista-backend
         env:
+          NODE_ENV: test
           TEST_MONGODB_URI: mongodb://localhost:27017/bloglist-test
           SECRET: test-secret
         run: npm test
