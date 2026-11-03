@@ -232,8 +232,6 @@ test("if a new user's username is less than 3 characters, the response will be 4
   await api.post("/api/users").send(newUser).expect(400);
 });
 
-//testi
-
 test("if a new user's password is less than 3 characters, the response will be 400 bad request", async () => {
   const newUser = {
     username: "Matti",
