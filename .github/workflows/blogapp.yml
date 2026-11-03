@@ -11,13 +11,13 @@ on:
 
 jobs:
   ci_and_deploy:
-    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
 
-    # services:
-    #   mongodb:
-    #     image: mongo:8
-    #     ports:
-    #       - 27017:27017
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
@@ -26,26 +26,31 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Check MongoDB
+        run: |
+          docker ps
+          nc -zv localhost 27017
+
       - name: Install backend dependencies
         working-directory: blogilista-backend
         run: npm install
 
-      # - name: Wait for MongoDB
-      #   run: |
-      #     for i in {1..30}; do
-      #       nc -z localhost 27017 && echo "MongoDB is ready" && exit 0
-      #       echo "Waiting for MongoDB..."
-      #       sleep 2
-      #     done
-      #     echo "MongoDB did not start"
-      #     exit 1
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..30}; do
+            nc -z localhost 27017 && echo "MongoDB is ready" && exit 0
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+          echo "MongoDB did not start"
+          exit 1
 
       - name: Run backend tests
         working-directory: blogilista-backend
-        # env:
-        #   NODE_ENV: test
-        #   TEST_MONGODB_URI: mongodb://localhost:27017/bloglist-test
-        #   SECRET: test-secret
+        env:
+          NODE_ENV: test
+          TEST_MONGODB_URI: mongodb://localhost:27017/bloglist-test
+          SECRET: test-secret
         run: npm test
 
       - name: Install frontend dependencies
