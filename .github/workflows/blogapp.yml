@@ -50,8 +50,16 @@ jobs:
         working-directory: bloglist-frontend
         run: npm run build
 
+      - name: Deploy backend
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+      - name: Deploy frontend
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}
+
   # notify_success:
-  #   needs: [simple_deployment_pipeline]
+  #   needs: [deployment_pipeline]
   #   if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
   #   runs-on: ubuntu-latest
 
@@ -66,8 +74,8 @@ jobs:
 
 
   # notify_failure:
-  #   needs: [simple_deployment_pipeline]
-  #   if: ${{ always() && needs.simple_deployment_pipeline.result == 'failure' }}
+  #   needs: [deployment_pipeline]
+  #   if: ${{ always() && needs.deployment_pipeline.result == 'failure' }}
   #   runs-on: ubuntu-latest
 
   #   steps:
