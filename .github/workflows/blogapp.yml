@@ -10,7 +10,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  ci_and_deploy:
+  deployment_pipeline:
     services:
       mongodb:
         image: mongo:7
@@ -26,24 +26,24 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Check MongoDB
-        run: |
-          docker ps
-          nc -zv localhost 27017
+      # - name: Check MongoDB
+      #   run: |
+      #     docker ps
+      #     nc -zv localhost 27017
 
       - name: Install backend dependencies
         working-directory: blogilista-backend
         run: npm install
 
-      - name: Wait for MongoDB
-        run: |
-          for i in {1..30}; do
-            nc -z localhost 27017 && echo "MongoDB is ready" && exit 0
-            echo "Waiting for MongoDB..."
-            sleep 2
-          done
-          echo "MongoDB did not start"
-          exit 1
+      # - name: Wait for MongoDB
+      #   run: |
+      #     for i in {1..30}; do
+      #       nc -z localhost 27017 && echo "MongoDB is ready" && exit 0
+      #       echo "Waiting for MongoDB..."
+      #       sleep 2
+      #     done
+      #     echo "MongoDB did not start"
+      #     exit 1
 
       - name: Run backend tests
         working-directory: blogilista-backend
@@ -104,7 +104,7 @@ jobs:
   #           Job: ${{ github.job }}
 
   # tag_release:
-  #   needs: [ci_and_deploy]
+  #   needs: [deployment_pipeline]
   #   if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
   #   runs-on: ubuntu-latest
 
