@@ -58,43 +58,43 @@ jobs:
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}
 
-  # notify_success:
-  #   needs: [deployment_pipeline]
-  #   if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-  #   runs-on: ubuntu-latest
+  notify_success:
+    needs: [deployment_pipeline]
+    if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Discord success notification      
-  #       uses: sarisia/actions-status-discord@v1
-  #       with:
-  #         webhook: ${{ secrets.DISCORD_WEBHOOK }}
-  #         status: ${{ job.status }}
-  #         title: "Deployment successful!"
-  #         description: "A new version deployed to production"
+    steps:
+      - name: Discord success notification      
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Deployment successful!"
+          description: "A new version deployed to production"
 
 
-  # notify_failure:
-  #   needs: [deployment_pipeline]
-  #   if: ${{ always() && needs.deployment_pipeline.result == 'failure' }}
-  #   runs-on: ubuntu-latest
+  notify_failure:
+    needs: [deployment_pipeline]
+    if: ${{ always() && needs.deployment_pipeline.result == 'failure' }}
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Discord error notification
-  #       uses: sarisia/actions-status-discord@v1
-  #       with:
-  #         webhook: ${{ secrets.DISCORD_WEBHOOK }}
-  #         status: ${{ job.status }}
-  #         title: "Build failed!"
-  #         description: |
-  #           The pipeline encountered an error
+    steps:
+      - name: Discord error notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Build failed!"
+          description: |
+            The pipeline encountered an error
 
-  #           Repository: ${{ github.repository }}
-  #           Branch: ${{ github.ref_name }}
-  #           Commit: ${{ github.sha }}
-  #           Message: ${{ github.event.head_commit.message }}
-  #           Author: ${{ github.actor }}
-  #           Workflow: ${{ github.workflow }}
-  #           Job: ${{ github.job }}
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Message: ${{ github.event.head_commit.message }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.workflow }}
+            Job: ${{ github.job }}
 
   tag_release:
     needs: [deployment_pipeline]
