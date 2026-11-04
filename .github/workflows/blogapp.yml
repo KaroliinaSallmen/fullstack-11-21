@@ -83,7 +83,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
+          status: failure
           title: "Build failed!"
           description: |
             The pipeline encountered an error
@@ -94,7 +94,7 @@ jobs:
             Message: ${{ github.event.head_commit.message }}
             Author: ${{ github.actor }}
             Workflow: ${{ github.workflow }}
-            Job: ${{ github.job }}
+            Job: deployment_pipeline
 
   tag_release:
     needs: [deployment_pipeline]
