@@ -21,7 +21,7 @@ const App = () => {
 
   const theme = createTheme({
     typography: {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: "Arial, sans-serif",
     },
   });
 
