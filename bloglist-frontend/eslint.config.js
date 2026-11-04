@@ -32,7 +32,7 @@ export default [
         { allowConstantExport: true },
       ],
       indent: ["error", 2],
-      "linebreak-style": ["error", "unix", "windows"],
+      "linebreak-style": ["error", "unix"],
       quotes: ["error", "double"],
       eqeqeq: "error",
       "no-trailing-spaces": "error",
