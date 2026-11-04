@@ -52,11 +52,11 @@ jobs:
 
       - name: Deploy backend
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
       - name: Deploy frontend
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}
 
   # notify_success:
   #   needs: [deployment_pipeline]
