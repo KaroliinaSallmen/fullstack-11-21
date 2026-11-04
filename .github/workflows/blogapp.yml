@@ -26,24 +26,9 @@ jobs:
         with:
           node-version: "24"
 
-      # - name: Check MongoDB
-      #   run: |
-      #     docker ps
-      #     nc -zv localhost 27017
-
       - name: Install backend dependencies
         working-directory: blogilista-backend
         run: npm install
-
-      # - name: Wait for MongoDB
-      #   run: |
-      #     for i in {1..30}; do
-      #       nc -z localhost 27017 && echo "MongoDB is ready" && exit 0
-      #       echo "Waiting for MongoDB..."
-      #       sleep 2
-      #     done
-      #     echo "MongoDB did not start"
-      #     exit 1
 
       - name: Run backend tests
         working-directory: blogilista-backend
@@ -103,21 +88,21 @@ jobs:
   #           Workflow: ${{ github.workflow }}
   #           Job: ${{ github.job }}
 
-  # tag_release:
-  #   needs: [deployment_pipeline]
-  #   if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-  #   runs-on: ubuntu-latest
+  tag_release:
+    needs: [deployment_pipeline]
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: write
+    permissions:
+      contents: write
 
-  #   steps:
-  #     - uses: actions/checkout@v6
-  #       with:
-  #         fetch-depth: 0
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-  #     - name: Bump version and push tag
-  #       uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         DEFAULT_BUMP: patch
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
