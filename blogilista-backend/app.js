@@ -9,6 +9,8 @@ const healthRouter = require("./controllers/health");
 
 const app = express();
 
+//joku muutos
+
 const Blog = mongoose.model("Blog", blogsRouter.blogSchema);
 
 mongoose.connect(config.MONGODB_URI, { family: 4 });
